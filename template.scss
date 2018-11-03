@@ -339,7 +339,7 @@ body {
 
 .slide,#title {
 	&.overview-transition {
-		transition: transform 1s linear;
+		transition: transform 1s ease-in-out;
 	}
 }
 
@@ -526,6 +526,10 @@ table {
 			font-weight: bold;
 			color: white;
 		}
+	}
+
+	&.fullwidth {
+		width: 100%;
 	}
 
 	&.grid {
