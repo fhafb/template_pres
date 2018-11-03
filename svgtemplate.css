@@ -1,0 +1,49 @@
+.fill_bgla {
+  fill: #E9F1DA; }
+
+.fill_a {
+  fill: #A1C51B; }
+
+.fill_b {
+  fill: #08508A; }
+
+.fill_c {
+  fill: #777; }
+
+.fill_d {
+  fill: #e68a00; }
+
+.fill_e {
+  fill: #199FD9; }
+
+.stroke_a {
+  stroke: #A1C51B; }
+
+.stroke_b {
+  stroke: #08508A; }
+
+.stroke_c {
+  stroke: #777; }
+
+.stroke_d {
+  stroke: #e68a00; }
+
+.stroke_e {
+  stroke: #199FD9; }
+
+.stroke_f {
+  stroke: #ff3399; }
+
+.svgbox {
+  rx: 10;
+  ry: 10;
+  stroke: #A1C51B;
+  fill: #E9F1DA;
+  filter: url("#shadow"); }
+
+.hcentertext {
+  text-anchor: middle; }
+
+.hvcentertext {
+  text-anchor: middle;
+  dominant-baseline: middle; }

@@ -1,0 +1,83 @@
+@charset "UTF-8";
+p + ul {
+  margin: -2.3vh 0 0 0; }
+
+html {
+  height: 100%; }
+
+body {
+  height: 100%;
+  margin: 0;
+  font-family: sans-serif;
+  display: flex;
+  flex-flow: row nowrap;
+  overflow: hidden; }
+
+#notes {
+  height: 100%;
+  overflow: auto;
+  border-right: 1px solid black;
+  padding-top: 1px;
+  flex: 1 1 70vw; }
+  #notes p, #notes table, #notes img, #notes object {
+    margin: 2.8vh 0; }
+  #notes h1 {
+    text-align: center;
+    border-bottom: 1px solid black; }
+  #notes h2 {
+    margin: 0.8em 0 0.2em 0; }
+  #notes ul {
+    margin: 0.2em 0;
+    padding-inline-start: 2.2em; }
+    #notes ul > li {
+      list-style-type: none;
+      padding-left: 0.4em;
+      text-indent: -0.7em;
+      line-height: 1; }
+      #notes ul > li::before {
+        content: "• ";
+        font-size: 200%;
+        color: #A1C51B;
+        display: inline-block;
+        vertical-align: -0.1em; }
+      #notes ul > li li {
+        font-size: 0.9em;
+        text-indent: -0.8em;
+        padding-left: 1em;
+        padding-bottom: 1.25vh; }
+        #notes ul > li li::before {
+          font-size: 1em;
+          content: "✗ "; }
+      #notes ul > li li:last-child {
+        padding-bottom: 0px; }
+
+aside {
+  flex: 1 0 30vw;
+  display: flex;
+  flex-flow: column nowrap; }
+  aside div#next {
+    flex: initial; }
+  aside div.space {
+    flex: auto; }
+  aside div.counter {
+    margin: 0;
+    padding: 0.2em 0;
+    flex: initial;
+    border-style: inset;
+    border-width: 3px; }
+    aside div.counter h1 {
+      margin: 0 0 0.2em 0;
+      font-size: 1.2em;
+      margin-bottom: 0.3em;
+      text-align: center; }
+    aside div.counter p {
+      margin: 0.2em 0;
+      font-size: 1.5em;
+      text-align: center; }
+  aside .late {
+    color: red; }
+  aside .early {
+    color: green; }
+
+strong {
+  font-weight: bold; }

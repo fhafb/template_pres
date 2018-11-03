@@ -1,0 +1,127 @@
+@import "colors";
+
+// General declarations
+p + ul {
+	margin: -2.3vh 0 0 0;
+}
+
+html {
+	height: 100%;
+}
+
+body {
+	height: 100%;
+	margin: 0;
+	font-family: sans-serif;
+	display: flex;
+	flex-flow: row nowrap;
+	overflow: hidden;
+}
+
+// Notes style
+#notes {
+	height: 100%;
+	overflow: auto;
+	border-right: 1px solid black;
+	padding-top: 1px;
+	flex: 1 1 70vw;
+
+	p,table,img,object {
+		margin: 2.8vh 0;
+	}
+
+	h1 {
+		text-align: center;
+		border-bottom: 1px solid black;
+	}
+
+	h2 {
+		margin: 0.8em 0 0.2em 0;
+	}
+
+	ul {
+		margin: 0.2em 0;
+		padding-inline-start: 2.2em;
+
+		& > li {
+			list-style-type: none;
+			padding-left: 0.4em;
+			text-indent: -0.7em;
+			line-height: 1;
+			
+			&::before {
+				content: "• ";
+				font-size: 200%;
+				color: $color_afbdarkgreen;
+				display: inline-block;
+				vertical-align: -0.1em;
+			}
+
+			li {
+				font-size: 0.9em;
+				text-indent: -0.8em;
+				padding-left: 1em;
+				padding-bottom: 1.25vh;
+
+				&::before {
+					font-size: 1em;
+					content: "✗ ";
+				}
+			}
+
+			li:last-child {
+				padding-bottom: 0px;
+			}
+		}
+	}
+}
+
+// Side bar styles
+aside {
+	flex: 1 0 30vw;
+	display: flex;
+	flex-flow: column nowrap;
+
+	div#next {
+		flex: initial;
+	}
+
+	div.space {
+		flex: auto;
+	}
+
+	div.counter {
+		margin: 0;
+		padding: 0.2em 0;
+		flex: initial;
+		border-style: inset;
+		border-width: 3px;
+		
+		h1 {
+			margin: 0 0 0.2em 0;
+			font-size: 1.2em;
+			margin-bottom: 0.3em;
+			text-align: center;
+		}
+
+		p {
+			margin: 0.2em 0;
+			font-size: 1.5em;
+			text-align: center;
+		}
+	}
+
+	.late {
+		color: red;
+	}
+
+	.early {
+		color: green;
+	}
+}
+
+// Generic styles
+
+strong {
+	font-weight: bold;
+}

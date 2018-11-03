@@ -1,0 +1,551 @@
+@import "colors";
+@import 'animations';
+
+// Mixins
+@mixin shadowed {
+	box-shadow: 1.5vw 1.2vh 1.2vmax rgba(0,0,0,0.5);
+}
+
+%hiddenLinks {
+	a {
+		text-decoration: none;
+		color: inherit;
+
+		&:hover {
+			color: inherit;
+		}
+
+		&:visited {
+			color: inherit;
+		}
+	}
+}
+
+// General declarations
+ul {
+	margin: 0;
+}
+
+p + ul {
+	margin: -2.3vh 0 0 0;
+}
+
+body {
+	height: 100vh;
+	overflow: hidden;
+	margin: 0;
+	font: 2.8vh sans-serif;
+}
+
+// Backgrounds
+#background {
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: -1;
+}
+
+// Navigation bar
+#minitoc {
+	width: 100%;
+	height: 5%;
+	position: absolute;
+	display: none;
+	top: 0;
+	left: 0;
+	z-index: 10;
+	flex-flow: row nowrap;
+	justify-content: center;
+
+	.section {
+		margin: 0 1.2vw;
+		font-size: 0.7em;
+		color: $color_afbdarkgreen;
+	}
+
+	& > div.currentSection .title {
+		background-color: $color_afbdarkgreen;
+		color: white;
+	}
+
+	.title {
+		padding: 0;
+	}
+
+	.section span.currentSubsection {
+		display: inline-block;
+		background-color: $color_afbdarkgreen;
+		margin: 0 0.24vw 0 0;
+
+		a {
+			color: white;
+		}
+	}
+	
+	a {
+		color: $color_afbdarkgreen;
+		text-decoration: none;
+		font-size: 1.2em;
+	}
+}
+
+// Footer
+#footer {
+	width: calc(100% - 2.4vw);
+	height: 5vh;
+	box-sizing: border-box;
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	margin: 0 1.2vw;
+	font-size: 0.7em;
+	color: $color_afbdarkgreen;
+
+	div:first-child {
+		position: absolute;
+		left: 0;
+		top: 0;
+	}
+
+	div:nth-child(2) {
+		text-align: center;
+	}
+
+	div:last-child {
+		position: absolute;
+		right: 0;
+		top: 0;
+	}
+}
+
+// Input line for synchronization
+#synchronize {
+	background-color: black;
+	color: white;
+	position: fixed;
+	top: -30px;
+	left: 0;
+	width: 100%;
+	z-index: 100;
+	display: block;
+	transition: top 0.5s ease;
+}
+
+#syncstatus {
+	font-size: 0.8em;
+	background-color: black;
+	color: white;
+	position: fixed;
+	padding: 0 0.2em 0.1em 0.2em;
+	top: 0;
+	right: 0;
+	z-index: 100;
+	display: inline-block;
+	@extend %hiddenLinks;
+
+	.active {
+		color: chartreuse;
+		font-weight: bold;
+	}
+
+	.inactive {
+		color: inherit;
+		font-weight: inherit;
+	}
+}
+
+// Title page
+#title {
+	visibility: hidden;
+	width: 100vw;
+	height: 100vh;
+	position: absolute;
+	top: 0;
+	left: 0;
+
+	%leftpos {
+		position: absolute;
+		left: 45%;
+		width: 51%;
+	}
+
+	&:target {
+		visibility: visible;
+	}
+
+	h1 {
+		@extend %leftpos;
+		color: $color_afbdarkgreen;
+		font: bold 180% sans-serif;
+		bottom: 26%;
+
+		.subtitle {
+			color: $color_afbdarkblue;
+			font: italic 80% sans-serif;
+		}
+	}
+
+	.authordate {
+		@extend %leftpos;
+		color: $color_afbdarkblue;
+		font-size: 120%;
+		line-height: 1.5;
+		top: 78%;
+	}
+}
+
+// Slide page
+.slide,#outline {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	display: flex;
+	visibility: hidden;
+	flex-flow: column nowrap;
+
+	&:target {
+		visibility: visible;
+	}
+
+	& > h1 {
+		position: relative;
+		padding: 1.5vh 0px 0.8vh 0px;
+		text-align: center;
+		font: bold 180% sans-serif;
+		color: $color_afbdarkgreen;
+		flex: none;
+		margin: 8vh 5vw 0.6vw 5vw;
+	}
+
+	& > .content {
+		border-width: 0.6vh 0;
+		border-style: solid;
+		border-color: $color_afbgreen;
+		padding: 1.2vw 2.4vw;
+		margin: 0 5vw 6vh 5vw;
+		min-height: 0;
+		flex: auto;
+		display: flex;
+		position: relative;
+		flex-flow: column nowrap;
+		justify-content: center;
+
+		figure.centered {
+			display: flex;
+			flex-flow: column nowrap;
+			flex: 1;
+			overflow: hidden;
+			position: relative;
+
+			svg,img {
+				margin: auto;
+				position: absolute;
+				top: 0;
+				right: 0;
+				bottom: 0;
+				left: 0;
+				max-width: 100%;
+				max-height: 100%;
+			}
+		}
+
+		&.autocolumns {
+			flex-wrap: wrap;
+
+			&>p,&>ul,&>div {
+				width: calc(50% - 1.8vw);
+				margin: 1.56vh 1.2vw;
+			}
+		}
+
+		&.twocolumns,.twocolumns {
+			display: flex;
+			flex-flow: row nowrap;
+			align-items: center;
+			justify-content: space-between;
+
+			& > div {
+				min-height:0;
+				flex: auto;
+				display: flex;
+				position: relative;
+				flex-flow: column nowrap;
+				justify-content: center;
+				box-sizing : border-box;
+				width: 45%;
+			}
+
+			& > div:first-child {
+				margin-right: 1em;
+			}
+		}
+	}
+	
+}
+
+// Outline page override
+#outline {
+	& > div > ul > li {
+		padding-bottom: 0.2vh;
+		padding-right: 1.2vw;
+	}
+
+	.notCurrentSection {
+		opacity: 0.5;
+	}
+
+	.currentSection {
+		opacity: 1;
+		background-color: #ccea62;
+		@include shadowed;
+		border-radius: 1.2vmax;
+	}
+
+	@extend %hiddenLinks;
+}
+
+// Overview
+#thumblayer {
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	top: 0;
+	left: 0;
+	overflow: auto;
+	margin: 0;
+	display: flex;
+	flex-flow: row wrap;
+	justify-content: space-between;
+	align-items: center;
+	z-index: 20;
+}
+
+#coverlayer {
+	background-color: rgba(0,0,0,0.5);
+	opacity: 0;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+	z-index: 15;
+	transition: opacity 1s linear;
+}
+
+.slide,#title {
+	&.overview-transition {
+		transition: transform 1s linear;
+	}
+}
+
+.wthumb {
+	width: 20vw;
+	height: 20vh;
+	margin: 1vh 1vw;
+	position: relative;
+
+	&:hover {
+		left: -2vw;
+		top: -2vh;
+		z-index: 21;
+
+		.thumbnail {
+			transform: scale(0.25, 0.25);
+		}
+	}
+}
+
+.thumbnail,#title.thumbnail,#outline.thumbnail {
+	visibility: visible;
+	background-color: white;
+	border: 1px solid black;
+	@include shadowed;
+	position: absolute;
+	top:0;
+	left:0;
+	transform-origin: left top;
+	transform: scale(0.20, 0.20);
+}
+
+.targetted,#title.targetted {
+	border: 20px solid $color_afbdarkgreen;
+}
+
+
+// Fragment styles
+.visible {
+	visibility: visible;
+	animation-play-state: running;
+}
+
+.invisible {
+	visibility: hidden;
+	animation-play-state: pause;
+}
+
+// Generic styles
+p,table,img,object {
+	margin: 2.8vh 0;
+}
+
+ul {
+	margin: 0.2em 0;
+	padding-inline-start: 2.2em;
+
+	& > li {
+		list-style-type: none;
+		padding-left: 0.4em;
+		text-indent: -0.7em;
+		line-height: 1;
+		
+		&::before {
+			content: "• ";
+			font-size: 200%;
+			color: $color_afbdarkgreen;
+			display: inline-block;
+			vertical-align: -0.1em;
+		}
+
+		li {
+			font-size: 0.9em;
+			text-indent: -0.8em;
+			padding-left: 1em;
+			padding-bottom: 1.25vh;
+
+			&::before {
+				font-size: 1em;
+				content: "✗ ";
+			}
+		}
+
+		li:last-child {
+			padding-bottom: 0px;
+		}
+	}
+}
+
+.block {
+	margin: 1.56vh 0vw;
+	padding: 0;
+	border-radius: 0.6vmax;
+	@include shadowed;
+	background-color: $color_afblightgreen;
+	
+	h1 {
+		padding: 0.47vh 0.6vw 0.78vh 0.6vw;
+		margin: 0 0 0.78vh 0;
+		border-radius: 0.6vmax 0.6vmax 0 0;
+		font: bold 120% sans-serif;
+		color: $color_afbdarkgreen;
+		background-image: linear-gradient(to bottom,$color_afbsemigreen 0%,$color_afbsemigreen 80%,$color_afblightgreen 100%);
+	}
+
+	.content {
+		padding: 0 1.2vw 0.78vh 1.2vw;
+	}
+
+	li {
+		margin-top: -0.78vh;
+	}
+}
+
+strong {
+	color: $color_afbdarkgreen;
+	font-weight: bold;
+}
+
+blockquote {
+	font-style: italic;
+	margin: 0;
+	padding: 1.2em 0 0 4.2vw;
+	position: relative;
+	
+	&::before {
+		content: "\201C";
+		color: $color_afbdarkblue;
+		font-size: 4em;
+		position: absolute;
+		left: 0px;
+		top: -1.56vh;
+	}
+}
+
+cite {
+	display: block;
+	text-align: right;
+}
+
+.shadowed {
+	@include shadowed;
+}
+
+figure {
+	margin: 0;
+}
+
+table {
+	display: table;
+	text-align: center;
+	border: 1px solid grey;
+	border-collapse: collapse;
+
+	thead,tfoot {
+		background-color: $color_afbdarkgreen;
+		color: white;
+		font-weight: bold;
+	}
+
+	thead,tr,tfoot {
+		border-bottom: 1px solid grey;
+	}
+
+	tbody tr:nth-child(even) {
+		background-color: #e9f6bc;
+	}
+
+	img {
+		margin: 0;
+	}
+
+	td {
+		padding: 0.2em;
+	}
+	
+	ul {
+		padding-inline-start: 1.2em;
+	}
+
+	&.headcolumn {
+		td:first-child {
+			background: $color_afbdarkgreen;
+			font-weight: bold;
+			color: white;
+		}
+	}
+
+	&.grid {
+		td {
+			border: 1px solid $color_afbdarkgreen;
+		}
+		thead td {
+			border: 1px solid white;
+		}
+		thead {
+			border-style: hidden;
+		}
+	}
+
+	&.leftaligned {
+		td {
+			text-align: left;
+		}
+		thead td {
+			text-align: center;
+		}
+	}
+}
