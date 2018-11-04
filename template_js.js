@@ -438,6 +438,49 @@ function update_outline_slide(slidenum) {
 }
 
 /**********************************
+ *        Printing management     *
+ **********************************/
+/**
+ * Make thumbnails out of the slides. The function scales all slides, displays their final fragments, and places them of a flexbox div.
+ */
+function open_print_view() {
+	// Wrap all slides in new divs to put them in a flexbox layout, and make them thumbnails
+	document.querySelectorAll('body > section').forEach(function(element) {
+		element.classList.add('thumbnail');
+		reset_fragments(element,getSlideElement(element.id)['numfragments']);
+		let wrapper=document.createElement('div');
+		wrapper.classList.add('wthumb');
+		element.parentNode.insertBefore(wrapper,element);
+		wrapper.appendChild(element);
+	});
+	let nwrapper=document.createElement('div');
+	nwrapper.id='thumblayer';
+	let firstdiv=document.querySelector('body div.wthumb');
+	firstdiv.parentNode.insertBefore(nwrapper,firstdiv);
+	document.querySelectorAll('body div.wthumb').forEach(function(element) {
+		nwrapper.appendChild(element);
+	});
+	getSlide(getSlideIndex('outline')).visibility='hidden';
+}
+
+/**
+ * Restore the view to its original state after printing
+ */
+function close_print_view() {
+	document.getElementById('thumblayer').querySelectorAll('div.wthumb').forEach(function(element) {
+		element.firstChild.classList.remove('thumbnail');
+		reset_fragments(element,0);
+		let parent=element.parentNode;
+		parent.insertBefore(element.firstChild,element);
+		parent.removeChild(element);
+	});
+	let tl=document.getElementById('thumblayer');
+	let parent=tl.parentNode;
+	while (tl.firstChild) parent.insertBefore(tl.firstChild,tl);
+	parent.removeChild(tl);
+}
+
+/**********************************
  *        Overview management     *
  **********************************/
 /**
@@ -512,76 +555,88 @@ function open_overview() {
  * @param {number} newslidenum - Selected slide which shall become the active slide when the overview is closed. If null, the previously active slide remains active.
  */
 function close_overview(newslidenum=null) {
+	function remove_overview_wrapper() {
+		document.getElementById('thumblayer').querySelectorAll('div.wthumb').forEach(function(element) {
+			element.firstChild.classList.remove('thumbnail');
+			let parent=element.parentNode;
+			parent.insertBefore(element.firstChild,element);
+			parent.removeChild(element);
+		});
+		let tl=document.getElementById('thumblayer');
+		let parent=tl.parentNode;
+		while (tl.firstChild) parent.insertBefore(tl.firstChild,tl);
+		parent.removeChild(tl);
+	}
 	on_overview=false;
 	getSlide(overview_curslide).classList.remove('targetted');	// Remove the visual style of the targetted slide in the overview
 	if (newslidenum==null) newslidenum=curslide;	// If no new slide was selected, the previously active slide will be animated to cover the whole screen
 	let slideo=getSlide(newslidenum);
-	slideo.parentNode.style.zIndex='30';
-	let oldpos=slideo.getBoundingClientRect();	// Remember the current position of the selected slide
-	let deltal=oldpos.left;
-	let deltat=oldpos.top;
-	let deltaw=oldpos.width/window.innerWidth-1;
-	let deltah=oldpos.height/window.innerHeight-1;
-	// Detach the selected slide from the flexbox layout
-	slideo.style.position='fixed';
-	slideo.style.transformOrigin='left top';
-	slideo.style.backgroundColor='white';
-	slideo.style.transform='translate('+(oldpos.left)+'px, '+(oldpos.top)+'px) scale('+(oldpos.width/window.innerWidth)+','+(oldpos.height/window.innerHeight)+')';
-	// Animate the selected slide from its position in the overview to the whole screen, while unblurring the background
-	let cl=document.getElementById('coverlayer');
-	cl.addEventListener('transitionend',function(event) {
-		cl.parentNode.removeChild(cl);
-	});
-	cl.style.opacity='0';
-	setTimeout(function() {
-		slideo.classList.add('overview-transition');
-		slideo.addEventListener('transitionend',function(event) {
-			slideo.style.transform=null;
-			slideo.style.position=null;
-			slideo.style.transformOrigin=null;
-			slideo.style.backgroundColor=null;
-			slideo.classList.remove('overview-transition');
-			document.getElementById('thumblayer').querySelectorAll('div.wthumb').forEach(function(element) {
-				element.firstChild.classList.remove('thumbnail');
-				let parent=element.parentNode;
-				parent.insertBefore(element.firstChild,element);
-				parent.removeChild(element);
-			});
-			let tl=document.getElementById('thumblayer');
-			let parent=tl.parentNode;
-			while (tl.firstChild) parent.insertBefore(tl.firstChild,tl);
-			parent.removeChild(tl);
-			// Prepare the new slide
-			if (newslidenum!=curslide) {
-				let newslideo=getSlide(newslidenum);
-				let slideo=getSlide(curslide);
-				let slide=curslide;
-				curslide=newslidenum;
-				curfragment=0;
-				reset_fragments(newslideo,0);
-				slideo.style.visibility=null;
-				if (slideo.dataset["onhide"]) window[slideo.dataset["onhide"]](slideo);
-				newslideo.style.visibility='visible';
-				if (newslideo.dataset["onshow"]) window[newslideo.dataset["onshow"]](newslideo);
-				program_hashchange=true;
-				location.hash="#"+newslideo.id;
-				newslideo.visibility=null;
-				reset_fragments(slideo,0);
-				update_navigation_bar(newslidenum,slide);
-				update_footer(newslideo);
-				if (newslideo.dataset['background']) {
-					document.getElementById('background').style.backgroundImage='url('+newslideo.dataset['background']+')';
-				}
-			} else {
-				let e=document.createEvent('HTMLEvents');
-				e.initEvent('hashchange',false,true);
-				window.dispatchEvent(e);
-			}
-		},{capture:false,once:true});
+	if (slideo.id=='outline') {
+		let cl=document.getElementById('coverlayer');
+		cl.addEventListener('transitionend',function(event) {
+			cl.parentNode.removeChild(cl);
+		});
+		cl.style.opacity='0';
+		remove_overview_wrapper();
+	} else {
+		slideo.parentNode.style.zIndex='30';
+		let oldpos=slideo.getBoundingClientRect();	// Remember the current position of the selected slide
+		let deltal=oldpos.left;
+		let deltat=oldpos.top;
+		let deltaw=oldpos.width/window.innerWidth-1;
+		let deltah=oldpos.height/window.innerHeight-1;
+		// Detach the selected slide from the flexbox layout
+		slideo.style.position='fixed';
+		slideo.style.transformOrigin='left top';
+		slideo.style.backgroundColor='white';
+		slideo.style.transform='translate('+(oldpos.left)+'px, '+(oldpos.top)+'px) scale('+(oldpos.width/window.innerWidth)+','+(oldpos.height/window.innerHeight)+')';
+		// Animate the selected slide from its position in the overview to the whole screen, while unblurring the background
+		let cl=document.getElementById('coverlayer');
+		cl.addEventListener('transitionend',function(event) {
+			cl.parentNode.removeChild(cl);
+		});
+		cl.style.opacity='0';
 		setTimeout(function() {
-			slideo.style.transform='translate(0px,0px) scale(1,1)';
+			slideo.classList.add('overview-transition');
+			slideo.addEventListener('transitionend',function(event) {
+				slideo.style.transform=null;
+				slideo.style.position=null;
+				slideo.style.transformOrigin=null;
+				slideo.style.backgroundColor=null;
+				slideo.classList.remove('overview-transition');
+				remove_overview_wrapper();
+				// Prepare the new slide
+				if (newslidenum!=curslide) {
+					let newslideo=getSlide(newslidenum);
+					let slideo=getSlide(curslide);
+					let slide=curslide;
+					curslide=newslidenum;
+					curfragment=0;
+					reset_fragments(newslideo,0);
+					slideo.style.visibility=null;
+					if (slideo.dataset["onhide"]) window[slideo.dataset["onhide"]](slideo);
+					newslideo.style.visibility='visible';
+					if (newslideo.dataset["onshow"]) window[newslideo.dataset["onshow"]](newslideo);
+					program_hashchange=true;
+					location.hash="#"+newslideo.id;
+					newslideo.visibility=null;
+					reset_fragments(slideo,0);
+					update_navigation_bar(newslidenum,slide);
+					update_footer(newslideo);
+					if (newslideo.dataset['background']) {
+						document.getElementById('background').style.backgroundImage='url('+newslideo.dataset['background']+')';
+					}
+				} else {
+					let e=document.createEvent('HTMLEvents');
+					e.initEvent('hashchange',false,true);
+					window.dispatchEvent(e);
+				}
+			},{capture:false,once:true});
+			setTimeout(function() {
+				slideo.style.transform='translate(0px,0px) scale(1,1)';
+			},20);
 		},20);
-	},20);
+	}
 }
 
 /**********************************
@@ -882,6 +937,10 @@ function afterLoad() {
 			if (sync[0]=='sync') registerSync(syncUrl,sync[1]); else pollSync(syncUrl,sync[1]);
 		}
 	}
+
+	// Print mode
+	window.onbeforeprint=open_print_view;
+	window.onafterprint=close_print_view;
 
 	// Handle swipe events
 	document.addEventListener('touchstart',handleTouchStart,false);

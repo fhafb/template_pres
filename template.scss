@@ -553,3 +553,36 @@ table {
 		}
 	}
 }
+
+@media print {
+	body {
+		height: auto;
+		margin: 0;
+		font: 2.8vh sans-serif;
+	}
+	
+	#thumblayer {
+		height: auto;
+		position: relative;
+	}
+	
+	.wthumb {
+		page-break-inside: avoid;
+		width: 48vw;
+		height: 48vh;
+	}
+	
+	.thumbnail,#title.thumbnail,#outline.thumbnail {
+		position: relative;
+		transform-origin: left top;
+		transform: scale(0.48, 0.48);
+	}
+
+	#minitoc,#footer {
+		visibility: hidden;
+	}
+	
+	* {
+		animation:none !important;
+	}
+}
