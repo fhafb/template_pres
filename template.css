@@ -402,7 +402,10 @@ table {
     background-color: #A1C51B;
     color: white;
     font-weight: bold; }
-  table thead, table tr, table tfoot {
+  table tbody.dummy-header {
+    font-weight: bold;
+    color: #A1C51B; }
+  table thead, table tr, table tfoot, table tbody.dummy-header {
     border-bottom: 1px solid grey; }
   table tbody tr:nth-child(even) {
     background-color: #e9f6bc; }
@@ -426,10 +429,12 @@ table {
     border-style: hidden; }
   table.leftaligned td {
     text-align: left; }
-  table.leftaligned thead td {
+  table.leftaligned thead td, table.leftaligned tbody.dummy-header td {
     text-align: center; }
 
 @media print {
+  @page {
+    size: landscape; }
   body {
     height: auto;
     margin: 0;
@@ -447,5 +452,7 @@ table {
     transform: scale(0.48, 0.48); }
   #minitoc, #footer {
     visibility: hidden; }
+  #background {
+    background-image: none !important; }
   * {
     animation: none !important; } }

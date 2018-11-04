@@ -500,7 +500,12 @@ table {
 		font-weight: bold;
 	}
 
-	thead,tr,tfoot {
+	tbody.dummy-header {
+		font-weight: bold;
+		color: $color_afbdarkgreen;
+	}
+
+	thead,tr,tfoot,tbody.dummy-header {
 		border-bottom: 1px solid grey;
 	}
 
@@ -548,13 +553,17 @@ table {
 		td {
 			text-align: left;
 		}
-		thead td {
+		thead td,tbody.dummy-header td {
 			text-align: center;
 		}
 	}
 }
 
 @media print {
+	@page {
+		size: landscape;
+	}
+
 	body {
 		height: auto;
 		margin: 0;
@@ -580,6 +589,10 @@ table {
 
 	#minitoc,#footer {
 		visibility: hidden;
+	}
+
+	#background {
+		background-image: none !important;
 	}
 	
 	* {

@@ -460,13 +460,22 @@ function open_print_view() {
 	document.querySelectorAll('body div.wthumb').forEach(function(element) {
 		nwrapper.appendChild(element);
 	});
-	getSlide(getSlideIndex('outline')).visibility='hidden';
+	// Remove outline slide if visible
+	if (slides[curslide]['id']=='outline') getSlide(curslide).style.display='none';
+	// Converts thead tags to tbody with class 'dummy-header'. This is intended to prevent the browser from trying to repeat in several times when printing.
+	document.querySelectorAll('thead').forEach(function(element) {
+		let newel=document.createElement('tbody');
+		newel.classList.add('dummy-header');
+		newel.innerHTML=element.innerHTML;
+		element.parentNode.replaceChild(newel,element);
+	});
 }
 
 /**
  * Restore the view to its original state after printing
  */
 function close_print_view() {
+	// Unwrap all slides from their flexbox layout
 	document.getElementById('thumblayer').querySelectorAll('div.wthumb').forEach(function(element) {
 		element.firstChild.classList.remove('thumbnail');
 		reset_fragments(element,0);
@@ -478,6 +487,14 @@ function close_print_view() {
 	let parent=tl.parentNode;
 	while (tl.firstChild) parent.insertBefore(tl.firstChild,tl);
 	parent.removeChild(tl);
+	// Remakes outline slide visible if it is selected
+	if (slides[curslide]['id']=='outline') getSlide(curslide).style.display='flex';
+	// Converts back dummy tbody tags to thead tags 
+	document.querySelectorAll('tbody.dummy-header').forEach(function(element) {
+		let newel=document.createElement('thead');
+		newel.innerHTML=element.innerHTML;
+		element.parentNode.replaceChild(newel,element);
+	});
 }
 
 /**********************************
