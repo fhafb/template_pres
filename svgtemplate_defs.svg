@@ -1,0 +1,13 @@
+<svg width="0" height="0" xmlns="http://www.w3.org/2000/svg" version="1.1">
+	<defs>
+		<marker id="arrow1" markerWidth="5" markerHeight="5" refX="2" refY="1.5" orient="auto" markerUnits="strokeWidth">
+			<path d="M0,0 L0,3 L4.5,1.5 z" fill="#9fc418" />
+		</marker>
+		<filter id="shadow" x="0" y="0" width="200%" height="200%">
+			<feOffset result="off" in="SourceGraphic" dx="10" dy="10" />
+			<feColorMatrix result="matout" in="off" type="matrix" values="0.2 0 0 0 0 0 0.2 0 0 0 0 0 0.2 0 0 0 0 0 1 0" />
+			<feGaussianBlur result="blur" in="matout" stdDeviation="5" />
+			<feBlend in="SourceGraphic" in2="blur" mode="normal" />
+		</filter>
+	</defs>
+</svg>

@@ -34,14 +34,14 @@ function updateClocks() {
 		let diff=ratio*duration-tim;
 		ratioElement.innerHTML=toHMS(Math.abs(diff));
 		if (diff>0) {
-			if (!ratioElement.hasClass('early')) {
-				ratioElement.removeClass('late');
-				ratioElement.addClass('early');
+			if (!ratioElement.classList.contains('early')) {
+				ratioElement.classList.remove('late');
+				ratioElement.classList.add('early');
 			}
 		} else {
-			if (!ratioElement.hasClass('late')) {
-				ratioElement.removeClass('early');
-				ratioElement.addClass('late');
+			if (!ratioElement.classList.contains('late')) {
+				ratioElement.classList.remove('early');
+				ratioElement.classList.add('late');
 			}
 		}
 	}
