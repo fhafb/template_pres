@@ -156,6 +156,50 @@ body {
 	}
 }
 
+// QR-Code display
+#qrcode-view {
+	position: absolute;
+	top: 5vh;
+	left: 5vw;
+	background-color: white;
+	width: 90vw;
+	height: 0vh;
+	border-radius: 2px;
+	z-index: 20;
+	display: flex;
+	flex-flow: column nowrap;
+	font-weight: bold;
+	font-size: 0;
+	font-family: sans-serif;
+	transition-duration: 1s;
+	transition-timing-function: ease;
+	transition-property: height, font-size;
+
+	&.active {
+		height: 90vh;
+		font-size: 160%;
+	}
+
+	.title {
+		text-align: center;
+		color: $color_afbdarkgreen;
+		flex: 0 1 0;
+	}
+
+	figure {
+		flex: 1;
+		display: flex;
+		flex-flow: column nowrap;
+		overflow: hidden;
+		position: relative;
+
+		img {
+			margin: 0 auto 0 auto;
+			height: 100%;
+		}
+	}
+}
+
 // Title page
 #title {
 	visibility: hidden;

@@ -22,6 +22,8 @@ var on_overview=false;
 var overview_curslide;
 /** Id of the notes window, null if not displayed */
 var wnotes=null;
+/** Tell if the sync QR-code is displayed */
+var on_qrcode=false;
 /** Touch event starting point x coordinate */
 var xDown=null;
 /** Touch event starting point y coordinate */
@@ -852,6 +854,38 @@ function toggleSync(elem) {
 	}
 }
 
+/**
+ * Display QR-Code of sync'ed presentation. This function uses the Google API to generate a QR-Code from a URL.
+ */
+function displayQrcode() {
+	document.body.insertAdjacentHTML('afterbegin','<div id="coverlayer"></div>');
+	document.getElementById('coverlayer').style.opacity='1';
+	let syncd=document.createElement('div');
+	syncd.id='qrcode-view';
+	let uri=encodeURIComponent(new URL(syncName,window.location.protocol+'//'+window.location.hostname+window.location.pathname));
+	syncd.innerHTML='<div class="title">Suivez la présentation en direct<br/>en flashant le QR-Code suivant</div><figure><img src="https://chart.googleapis.com/chart?cht=qr&chl='+uri+'&chs=400x400" /></figure>';
+	on_qrcode=true;
+	document.body.insertAdjacentElement('afterbegin',syncd);
+	setTimeout(()=>{syncd.classList.add('active');},10);
+}
+
+/**
+ * Close QR-Code of sync'ed presentation.
+ */
+function closeQrcode() {
+	let cl=document.getElementById('coverlayer');
+	cl.addEventListener('transitionend',function(event) {
+		cl.parentNode.removeChild(cl);
+	});
+	cl.style.opacity='0';
+	let syncd=document.getElementById('qrcode-view');
+	syncd.addEventListener('transitionend',function(event) {
+		syncd.parentElement.removeChild(syncd);
+		on_qrcode=false;
+	});
+	syncd.classList.remove('active');
+}
+
 /**********************************
  *     Main document functions    *
  **********************************/
@@ -1081,19 +1115,27 @@ function afterLoad() {
 				}
 				break;
 			case 83:	// 's'
-				if (syncUrl) {
-					e.stopImmediatePropagation();
-					let syncd=document.createElement('div');
-					syncd.id='synchronize';
-					syncd.innerHTML='Identifiant de synchronisation : <input type="text" id="syncName" maxlength="30">';
-					document.body.insertAdjacentElement('afterbegin',syncd);
-					setTimeout(function() {
-						syncd.style.top='0px';
-						let obj=syncd.lastChild;
-						obj.addEventListener('keydown',() => {event.stopPropagation()},false);
-						obj.addEventListener('keyup',getSyncName,false);
-						obj.focus();
-					},20);
+				if (e.shiftKey) {
+					if (on_qrcode) {
+						closeQrcode();
+					} else {
+						if (syncName) displayQrcode();
+					}
+				} else {
+					if (syncUrl) {
+						e.stopImmediatePropagation();
+						let syncd=document.createElement('div');
+						syncd.id='synchronize';
+						syncd.innerHTML='Identifiant de synchronisation : <input type="text" id="syncName" maxlength="30">';
+						document.body.insertAdjacentElement('afterbegin',syncd);
+						setTimeout(function() {
+							syncd.style.top='0px';
+							let obj=syncd.lastChild;
+							obj.addEventListener('keydown',() => {event.stopPropagation()},false);
+							obj.addEventListener('keyup',getSyncName,false);
+							obj.focus();
+						},20);
+					}
 				}
 				break;
 		}
