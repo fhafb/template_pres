@@ -862,7 +862,7 @@ function displayQrcode() {
 	document.getElementById('coverlayer').style.opacity='1';
 	let syncd=document.createElement('div');
 	syncd.id='qrcode-view';
-	let uri=encodeURIComponent(window.location.protocol+'//'+window.location.hostname+window.location.pathname+'?sync=syncName');
+	let uri=encodeURIComponent(window.location.protocol+'//'+window.location.hostname+window.location.pathname+'?sync='+syncName);
 	syncd.innerHTML='<div class="title">Suivez la présentation en direct<br/>en flashant le QR-Code suivant</div><figure><img src="https://chart.googleapis.com/chart?cht=qr&chl='+uri+'&chs=400x400" /></figure>';
 	on_qrcode=true;
 	document.body.insertAdjacentElement('afterbegin',syncd);
