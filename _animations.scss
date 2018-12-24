@@ -59,4 +59,23 @@
 		opacity: 0 !important;
 	}
 
+	// Slide-animation: takeoff
+	&.anim-takeoff-transitions {
+		opacity: 1;
+		transform-origin: center center;
+		transition-property: transform, opacity;
+		transition-duration: 1s;
+		transition-timing-function: ease-in-out;
+	}
+
+	&.anim-takeoff-from {
+		transform: scale(0.2);
+		opacity: 0 !important;
+	}
+
+	&.anim-takeoff-to {
+		transform: scale(5);
+		opacity: 0 !important;
+	}
+
 }

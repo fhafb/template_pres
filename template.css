@@ -43,6 +43,21 @@
   transform: rotateY(120deg) scale(0.5);
   opacity: 0 !important; }
 
+.slide.anim-takeoff-transitions, #outline.anim-takeoff-transitions, #title.anim-takeoff-transitions {
+  opacity: 1;
+  transform-origin: center center;
+  transition-property: transform, opacity;
+  transition-duration: 1s;
+  transition-timing-function: ease-in-out; }
+
+.slide.anim-takeoff-from, #outline.anim-takeoff-from, #title.anim-takeoff-from {
+  transform: scale(0.2);
+  opacity: 0 !important; }
+
+.slide.anim-takeoff-to, #outline.anim-takeoff-to, #title.anim-takeoff-to {
+  transform: scale(5);
+  opacity: 0 !important; }
+
 #syncstatus a, #outline a {
   text-decoration: none;
   color: inherit; }
@@ -63,19 +78,28 @@ body {
   margin: 0;
   font: 2.8vh sans-serif; }
 
-#background {
+#background, #newbackground {
   width: 100%;
   height: 100%;
   position: absolute;
   top: 0;
   left: 0;
-  z-index: -1; }
+  z-index: -1;
+  transition: opacity 1s ease; }
+
+#background {
+  opacity: 1; }
+
+#newbackground {
+  opacity: 0; }
 
 #minitoc {
   width: 100%;
   height: 5%;
   position: absolute;
-  display: none;
+  opacity: 0;
+  transition: opacity 1s ease;
+  display: flex;
   top: 0;
   left: 0;
   z-index: 10;
@@ -475,7 +499,8 @@ table {
     font: 2.8vh sans-serif; }
   #thumblayer {
     height: auto;
-    position: relative; }
+    position: relative;
+    top: -4vh; }
   .wthumb {
     page-break-inside: avoid;
     width: 48vw;

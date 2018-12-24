@@ -16,6 +16,8 @@ var curslide=0;
 var curfragment=0;
 /** Tell if a hash change event is managed by the script or not */
 var program_hashchange=false;
+/** Url of the current background */
+var background_url=null;
 /** Tell if the user is browsing the overview */
 var on_overview=false;
 /** Current slide number on overview, relative to the slides array */
@@ -92,6 +94,50 @@ function count_fragments() {
 			getSlideElement(element.id)['numfragments']=max;
 		}
 	});
+}
+
+/**********************************
+ *       Utility functions        *
+ **********************************/
+function getDate() {
+	let elem=document.getElementById("title").getElementsByTagName('time')[0];
+	if (elem.innerHTML!='') return;
+	const months=["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"];
+	const days=["Dimanche","Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi"];
+	let d=new Date();
+	elem.innerHTML=days[d.getDay()]+" "+d.getDate()+" "+months[d.getMonth()]+" "+d.getFullYear();
+}
+
+/**********************************
+ *      Background functions      *
+ **********************************/
+/**
+ * Change background image to a new one applying a smooth transition between them
+ * @param {string} url - Url of the new background
+ */
+function switch_background(url) {
+	if (url==background_url) return;
+	let oldbg=document.getElementById('background');
+	let newbg=document.getElementById('newbackground');
+	newbg.style.backgroundImage='url('+url+')';
+	oldbg.style.opacity='0';
+	newbg.addEventListener('transitionend',function(event) {
+		oldbg.style.backgroundImage=newbg.style.backgroundImage;
+		oldbg.style.transition='none';
+		newbg.style.transition='none';
+		background_url=url;
+		setTimeout(function() {
+			oldbg.style.opacity='1';
+			newbg.style.opacity='0';
+			setTimeout(function() {
+				oldbg.style.transition='opacity 1s ease';
+				newbg.style.transition='opacity 1s ease';
+			},20);
+		},20);
+	},{capture:false,once:true});
+	setTimeout(function() {
+		newbg.style.opacity='1';
+	},20);
 }
 
 /**********************************
@@ -338,8 +384,8 @@ function update_navigation_bar(newslidenum,oldslidenum) {
 	if (oldslidenum) {
 		Array.from(minitoc.querySelectorAll('[href="#'+slides[oldslidenum]['id']+'"]')).forEach(element => element.innerHTML='&#x25cb;');
 	}
-	if (slides[newslidenum]['id']=="title") minitoc.style.display='none'; else {
-		minitoc.style.display='flex';
+	if (slides[newslidenum]['id']=="title") minitoc.style.opacity='0'; else {
+		minitoc.style.opacity='1';
 		if (slides[newslidenum]['id']=="outline") {
 			Array.from(minitoc.querySelectorAll('div[data-section="'+slides[newslidenum]['section']+'"]')).forEach(element => element.classList.add('currentSection'));
 		} else {
@@ -464,7 +510,7 @@ function open_print_view() {
 	});
 	// Remove outline slide if visible
 	if (slides[curslide]['id']=='outline') getSlide(curslide).style.display='none';
-	// Converts thead tags to tbody with class 'dummy-header'. This is intended to prevent the browser from trying to repeat in several times when printing.
+	// Converts thead tags to tbody with class 'dummy-header'. This is intended to prevent the browser from trying to repeat them several times when printing.
 	document.querySelectorAll('thead').forEach(function(element) {
 		let newel=document.createElement('tbody');
 		newel.classList.add('dummy-header');
@@ -643,7 +689,7 @@ function close_overview(newslidenum=null) {
 					update_navigation_bar(newslidenum,slide);
 					update_footer(newslideo);
 					if (newslideo.dataset['background']) {
-						document.getElementById('background').style.backgroundImage='url('+newslideo.dataset['background']+')';
+						switch_background(newslideo.dataset['background']);
 					}
 				} else {
 					let e=document.createEvent('HTMLEvents');
@@ -727,7 +773,7 @@ function switch_slide(newslidenum,newfragmentnum) {
 			update_footer(newslideo);
 		});
 		if (newslideo.dataset['background']) {
-			document.getElementById('background').style.backgroundImage='url('+newslideo.dataset['background']+')';
+			switch_background(newslideo.dataset['background']);
 		}
 	} else if (curfragment!=newfragmentnum) {
 		let fragment=curfragment;
@@ -880,9 +926,9 @@ function closeQrcode() {
 	cl.style.opacity='0';
 	let syncd=document.getElementById('qrcode-view');
 	syncd.addEventListener('transitionend',function(event) {
-		syncd.parentElement.removeChild(syncd);
+		syncd.parentNode.removeChild(syncd);
 		on_qrcode=false;
-	});
+	},{once:true});
 	syncd.classList.remove('active');
 }
 
@@ -911,8 +957,12 @@ document.addEventListener("DOMContentLoaded",function(event) {
 function afterLoad() {
 	window.name="parentpres";
 	syncUrl=document.documentElement.dataset['synchronize'];
-	// Create background
+	// Create background layers
+	document.body.insertAdjacentHTML('afterbegin','<div id="newbackground"></div>');
 	document.body.insertAdjacentHTML('afterbegin','<div id="background"></div>');
+
+	// Automatically add date if none is given
+	getDate();
 
 	// Attribute id to each slide
 	Array.from(document.getElementsByClassName('slide')).forEach(function(element,index) {
@@ -940,7 +990,7 @@ function afterLoad() {
 		else if (location.hash=="#outline") {
 			curslide=getSlideIndex('outline');
 		} else curslide=parseInt(getSlideIndex(location.hash.substring(1)));
-	document.getElementById('background').style.backgroundImage='url('+getSlide(curslide).dataset['background']+')';
+	switch_background(getSlide(curslide).dataset['background']);
 
 	// Add navigation bar
 	add_navigation_bar();
@@ -960,7 +1010,7 @@ function afterLoad() {
 			curslide=getSlideIndex(location.hash.substring(1));
 			let curslideo=getSlide(curslide);
 			curslideo.style.visibility='visible';
-			document.getElementById('background').style.backgroundImage='url('+curslideo.dataset['background']+')';
+			switch_background(curslideo.dataset['background']);
 			update_navigation_bar(curslide,slide);
 			update_footer(curslideo);
 			reset_fragments(curslideo,0);
