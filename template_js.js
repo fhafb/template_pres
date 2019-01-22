@@ -2,6 +2,10 @@
  *	Each element of the slide is an object with the following members:
  *	<dl>
  *		<dt>id</dt><dd>id of the slide</dd>
+ *		<dt>background</dt><dd>URL of background image, an empty string if there is no background</dd>
+ *		<dt>animation</dt><dd>Name of the animation used when the slide is displayed (either a function name or a part of a CSS class name)</dd>
+ *		<dt>navigation</dt><dd>True if the navigation bar has to be displayed. By default, it is true for all slides except for title slide.</dd>
+ *		<dt>footer</dt><dd>True if the footer has to be displayed. By default, it is true for all slides except for title slide.</dd>
  *		<dt>numfragments</dt><dd>Number of fragments in the slide</dd>
  *	</dl>
  *	Additionnally, it may hold the following members:
@@ -36,6 +40,16 @@ var syncUrl=null;
 var syncName=null;
 /** Slave mode */
 var slaveMode=false;
+
+/**
+ * Compare string values in a case-insensitive manner. Also works when one string is undefined.
+ * @param {string} a - First string
+ * @param {string} b - Second string
+ * @returns True if both strings exist and are equal
+ */
+function compare(a,b) {
+	return (a && b && a.toUpperCase()==b.toUpperCase());
+}
 
 /**
  * Look for the first object in the {@link slides} variable that stands for the slide with the given id
@@ -119,7 +133,7 @@ function switch_background(url) {
 	if (url==background_url) return;
 	let oldbg=document.getElementById('background');
 	let newbg=document.getElementById('newbackground');
-	newbg.style.backgroundImage='url('+url+')';
+	if (url && url!='') newbg.style.backgroundImage='url('+url+')'; else newbg.style.backgroundImage='none';
 	oldbg.style.opacity='0';
 	newbg.addEventListener('transitionend',function(event) {
 		oldbg.style.backgroundImage=newbg.style.backgroundImage;
@@ -324,11 +338,14 @@ function animate_css(source,dest,increasing,callback,name) {
 function apply_animation(source,dest,increasing,callback) {
 	let fn=null;
 	let name;
-	if (dest.dataset["animation"]) fn=window[dest.dataset["animation"]]; else fn=animate_none;
-	if (!fn) {
-		name=dest.dataset["animation"];
-		fn=animate_css;
-	}
+	let destid=getSlideIndex(dest.id);
+	if (slides[destid]["animation"] && slides[destid]['animation']!='') {
+		fn=window[slides[destid]["animation"]];
+		if (!fn) {
+			name=slides[destid]["animation"];
+			fn=animate_css;
+		} 
+	} else fn=animate_none;
 	if (dest.id==source.id) fn=animate_none;
 	fn(source,dest,increasing,callback,name);
 }
@@ -384,7 +401,7 @@ function update_navigation_bar(newslidenum,oldslidenum) {
 	if (oldslidenum) {
 		Array.from(minitoc.querySelectorAll('[href="#'+slides[oldslidenum]['id']+'"]')).forEach(element => element.innerHTML='&#x25cb;');
 	}
-	if (slides[newslidenum]['id']=="title") minitoc.style.opacity='0'; else {
+	if (slides[newslidenum]['navigation']===true) {
 		minitoc.style.opacity='1';
 		if (slides[newslidenum]['id']=="outline") {
 			Array.from(minitoc.querySelectorAll('div[data-section="'+slides[newslidenum]['section']+'"]')).forEach(element => element.classList.add('currentSection'));
@@ -397,7 +414,7 @@ function update_navigation_bar(newslidenum,oldslidenum) {
 				if (section) section.classList.add('currentSection');
 			});
 		}
-	}
+	} else minitoc.style.opacity='0';
 }
 
 /**********************************
@@ -419,13 +436,13 @@ function add_footer() {
 
 /**
  * Update the footer when a new slide is displayed. The function change the page index in the footer
- * @param {number} newslide - DOM object representing the new slide
+ * @param {number} newslidenum - New slide index, relative to the {@link slides} array
  */
-function update_footer(newslide) {
+function update_footer(newslidenum) {
 	let footer=document.getElementById('footer');
-	if (newslide.id.startsWith('slide-') || newslide.id=="outline") {
+	if (slides[newslidenum]['footer']===true) {
 		footer.style.display='block';
-		footer.querySelector('div:last-child').innerHTML=getSlideIndex(newslide.id)+'/'+(slides.length-1);
+		footer.querySelector('div:last-child').innerHTML=newslidenum+'/'+(slides.length-1);
 	} else footer.style.display='none';
 }
 
@@ -687,10 +704,8 @@ function close_overview(newslidenum=null) {
 					newslideo.visibility=null;
 					reset_fragments(slideo,0);
 					update_navigation_bar(newslidenum,slide);
-					update_footer(newslideo);
-					if (newslideo.dataset['background']) {
-						switch_background(newslideo.dataset['background']);
-					}
+					update_footer(newslidenum);
+					switch_background(slides[newslidenum]['background']);
 				} else {
 					let e=document.createEvent('HTMLEvents');
 					e.initEvent('hashchange',false,true);
@@ -770,11 +785,9 @@ function switch_slide(newslidenum,newfragmentnum) {
 			apply_start_fragments(newslideo,false);
 			animate_fragment(curslide,0,curslide>slide);
 			update_navigation_bar(newslidenum,slide);
-			update_footer(newslideo);
+			update_footer(newslidenum);
 		});
-		if (newslideo.dataset['background']) {
-			switch_background(newslideo.dataset['background']);
-		}
+		switch_background(slides[newslidenum]['background']);
 	} else if (curfragment!=newfragmentnum) {
 		let fragment=curfragment;
 		curfragment=newfragmentnum;
@@ -908,8 +921,9 @@ function displayQrcode() {
 	document.getElementById('coverlayer').style.opacity='1';
 	let syncd=document.createElement('div');
 	syncd.id='qrcode-view';
-	let uri=encodeURIComponent(window.location.protocol+'//'+window.location.hostname+window.location.pathname+'?sync='+syncName);
-	syncd.innerHTML='<div class="title">Suivez la présentation en direct<br/>en flashant le QR-Code suivant</div><figure><img src="https://chart.googleapis.com/chart?cht=qr&chl='+uri+'&chs=400x400" /></figure>';
+	let uri=window.location.protocol+'//'+window.location.hostname+window.location.pathname+'?sync='+syncName;
+	let encodeduri=encodeURIComponent(uri);
+	syncd.innerHTML='<div class="title">Suivez la présentation en direct<br/>en flashant le QR-Code suivant</div><figure><img src="https://chart.googleapis.com/chart?cht=qr&chl='+encodeduri+'&chs=400x400" /></figure><p><a href="'+uri+'">'+uri+'</p>';
 	on_qrcode=true;
 	document.body.insertAdjacentElement('afterbegin',syncd);
 	setTimeout(()=>{syncd.classList.add('active');},10);
@@ -933,8 +947,55 @@ function closeQrcode() {
 }
 
 /**********************************
+ *         Notes window           *
+ **********************************/
+function onNotesLoaded(event) {
+	let titles=document.querySelectorAll('body > section > h1');
+	let num=titles.length;
+	Array.from(wnotes.document.getElementsByTagName('h2')).forEach(function(element) {
+		let i=0;
+		while (i<num && titles[i].innerHTML!=element.innerHTML) ++i;
+		if (i<num) element.id=titles[i].parentNode.id;
+	});
+}
+
+/**********************************
  *     Main document functions    *
  **********************************/
+/**
+ * Generate the array of slides {@link slides}
+ */
+function prepare_slides() {
+	// Attribute id to each slide
+	Array.from(document.getElementsByClassName('slide')).forEach(function(element,index) {
+		let id="slide-"+(index+1);
+		element.id=id;
+		if ('#'+id==location.hash) element.style.visibility='visible';
+	})
+	// Get attributes of slides
+	let slide=document.getElementById('title');
+	slides.push({'id':'title','background':slide.dataset['background'],'animation':slide.dataset['animation'],'navigation':compare(slide.dataset['navigation'],'true'),'footer':compare(slide.dataset['footer'],'true')});
+	let lastb="";
+	let lasta="";
+	Array.from(document.getElementsByClassName('slide')).forEach(function(element) {
+		if ('background' in element.dataset) lastb=element.dataset['background'];
+		if ('animation' in element.dataset) lasta=element.dataset['animation'];
+		slides.push({'id':element.id,'background':lastb,'animation':lasta,'navigation':!compare(element.dataset['navigation'],'false'),'footer':!compare(element.dataset['footer'],'false')});
+	});
+	count_fragments(); // Count fragments in each slide
+	compose_outline_slide(); // Fill out outline slides
+	slide=document.getElementById('outline');
+	lastb=slide.dataset['background'];
+	if (lastb===null) lastb='';
+	lasta=slide.dataset['animation'];
+	if (lasta===null) lasta='';
+	Array.from(document.querySelectorAll('section[data-section]')).forEach(function(element) {
+		let index=getSlideIndex(element.id);
+		slides.splice(index,0,{'id':'outline','background':lastb,'animation':lasta,'navigation':!compare(slide.dataset['navigation'],'false'),'footer':!compare(slide.dataset['footer'],'false'),'numfragments':0,'section':element.dataset['section']});
+	});
+	slides.splice(1,0,{'id':'outline','background':lastb,'animation':lasta,'navigation':!compare(slide.dataset['navigation'],'false'),'footer':!compare(slide.dataset['footer'],'false'),'numfragments':0,'section':''});
+}
+
 document.addEventListener("DOMContentLoaded",function(event) {
 	// Load external SVG files
 	let svgpromises=[];
@@ -964,25 +1025,7 @@ function afterLoad() {
 	// Automatically add date if none is given
 	getDate();
 
-	// Attribute id to each slide
-	Array.from(document.getElementsByClassName('slide')).forEach(function(element,index) {
-		let id="slide-"+(index+1);
-		element.id=id;
-		if ('#'+id==location.hash) element.style.visibility='visible';
-	})
-
-	// Prepare the array of slides
-	slides.push({'id':'title'});
-	Array.from(document.getElementsByClassName('slide')).forEach(function(element) {
-		slides.push({'id':element.id});
-	});
-	count_fragments(); // Count fragments in each slide
-	compose_outline_slide(); // Fill out outline slides
-	Array.from(document.querySelectorAll('section[data-section]')).forEach(function(element) {
-		let index=getSlideIndex(element.id);
-		slides.splice(index,0,{'id':'outline','numfragments':0,'section':element.dataset['section']});
-	});
-	slides.splice(1,0,{'id':'outline','numfragments':0,'section':''});
+	prepare_slides(); // Prepare the array of slides
 
 	// Get current slide
 	if (location.hash=='') location.hash='#title';
@@ -990,7 +1033,7 @@ function afterLoad() {
 		else if (location.hash=="#outline") {
 			curslide=getSlideIndex('outline');
 		} else curslide=parseInt(getSlideIndex(location.hash.substring(1)));
-	switch_background(getSlide(curslide).dataset['background']);
+	switch_background(slides[curslide]['background']);
 
 	// Add navigation bar
 	add_navigation_bar();
@@ -998,7 +1041,7 @@ function afterLoad() {
 
 	// Add footer bar
 	add_footer();
-	update_footer(getSlide(curslide));
+	update_footer(curslide);
 
 	// Hash change handler
 	window.addEventListener('hashchange',function() {
@@ -1010,13 +1053,14 @@ function afterLoad() {
 			curslide=getSlideIndex(location.hash.substring(1));
 			let curslideo=getSlide(curslide);
 			curslideo.style.visibility='visible';
-			switch_background(curslideo.dataset['background']);
+			switch_background(slides[curslide]['background']);
 			update_navigation_bar(curslide,slide);
-			update_footer(curslideo);
+			update_footer(curslide);
 			reset_fragments(curslideo,0);
 		}
 		if (wnotes!=null && !wnotes.closed) {
 			wnotes.location.hash=location.hash;
+			//wnotes.postMessage(getSlide(curslide).getElementsByTagName('h1')[0].innerHTML,'*');
 			wnotes.ratio=curslide/slides.length;
 		}
 		if (!slaveMode && syncUrl && syncName) {
@@ -1148,6 +1192,7 @@ function afterLoad() {
 			case 78:	// 'n'
 				if (wnotes==null || wnotes.closed) {
 					wnotes=window.open(document.documentElement.dataset['notes']+"#"+getSlide(curslide).id,"Notes","left=0, top=0, status=no, menubar=no, toolbar=no, location=no, directories=no, copyhistory=no, width='+w+', height='+h', fullscreen=yes");
+					wnotes.onload=onNotesLoaded;
 				} else {
 					wnotes.close();
 				}

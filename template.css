@@ -207,6 +207,9 @@ body {
     #qrcode-view figure img {
       margin: 0 auto 0 auto;
       height: 100%; }
+  #qrcode-view p {
+    text-align: center;
+    font-size: 0.7em; }
 
 #title {
   visibility: hidden;
@@ -421,7 +424,7 @@ ul {
     background-image: linear-gradient(to bottom, #D9E8A3 0%, #D9E8A3 80%, #E9F1DA 100%); }
   .block .content {
     padding: 0 1.2vw 0.78vh 1.2vw; }
-  .block li {
+  .block li:first-child {
     margin-top: -0.78vh; }
 
 strong {

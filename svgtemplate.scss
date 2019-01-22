@@ -1,47 +1,51 @@
 @import "colors";
 
 // SVG declarations
-.fill_bgla {
-	fill: $palette_bgla;
+svg {
+	.fill_bgla {
+		fill: $palette_bgla;
+	}
+
+	.fill_a { fill: $palettea; }
+
+	.fill_b { fill: $paletteb; }
+
+	.fill_c { fill: $palettec; }
+
+	.fill_d { fill: $paletted; }
+
+	.fill_e { fill: $palettee; }
+
+	.stroke_a { stroke: $palettea; }
+
+	.stroke_b { stroke: $paletteb; }
+
+	.stroke_c { stroke: $palettec; }
+
+	.stroke_d { stroke: $paletted; }
+
+	.stroke_e { stroke: $palettee; }
+
+	.stroke_f { stroke: $palettef; }
+
+	.shadowed {
+		filter: url("#shadow");
+	}
+
+	.svgbox {
+		rx: 10;
+		ry: 10;
+		stroke: $palettea;
+		fill: $palette_bgla;
+		filter: url("#shadow");
+	}
+
+	.hcentertext {
+		text-anchor: middle;
+	}
+
+	.hvcentertext {
+		text-anchor: middle;
+		dominant-baseline: middle;
+	}
 }
-
-.fill_a { fill: $palettea; }
-
-.fill_b { fill: $paletteb; }
-
-.fill_c { fill: $palettec; }
-
-.fill_d { fill: $paletted; }
-
-.fill_e { fill: $palettee; }
-
-.stroke_a { stroke: $palettea; }
-
-.stroke_b { stroke: $paletteb; }
-
-.stroke_c { stroke: $palettec; }
-
-.stroke_d { stroke: $paletted; }
-
-.stroke_e { stroke: $palettee; }
-
-.stroke_f { stroke: $palettef; }
-
-.svgbox {
-	rx: 10;
-	ry: 10;
-	stroke: $palettea;
-	fill: $palette_bgla;
-	filter: url("#shadow");
-}
-
-.hcentertext {
-	text-anchor: middle;
-}
-
-.hvcentertext {
-	text-anchor: middle;
-	dominant-baseline: middle;
-}
-
-

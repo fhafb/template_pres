@@ -209,6 +209,11 @@ body {
 			height: 100%;
 		}
 	}
+
+	p {
+		text-align: center;
+		font-size: 0.7em;
+	}
 }
 
 // Title page
@@ -504,7 +509,7 @@ ul {
 		padding: 0 1.2vw 0.78vh 1.2vw;
 	}
 
-	li {
+	li:first-child {
 		margin-top: -0.78vh;
 	}
 }

@@ -47,6 +47,14 @@ function updateClocks() {
 	}
 }
 
+document.addEventListener("message",function(event) {
+	let sections=document.getElementsByTagName('h2');
+	let num=sections.length;
+	let i=0;
+	while (i<num && sections[i].innerHTML!=event.data) ++i;
+	if (i<num) sections[i].scrollIntoView();
+},false);
+
 document.addEventListener("DOMContentLoaded",function(event) {
 	let wrapper=document.createElement('div');
 	wrapper.id='notes';
