@@ -82,7 +82,7 @@ function getSlideIndex(slideid) {
  * This function prepare the handling of fragments. It first parses the <tt>data-fragment</tt>, <tt>data-fstart</tt> and <tt>data-fanim</tt> attributes of objects. Then it counts the number of fragments of each slide and adds it to the {@link slides} array.
  */
 function count_fragments() {
-	for (let val of ['fragment','fanim','fstart']) {
+	for (let val of ['fragment','fanim','fstart','autofragment']) {
 		Array.from(document.querySelectorAll('[data-'+val+']')).forEach(function(element) {
 			let attr=element.dataset[val];
 			attr=attr.replace(/'/g,'"');
@@ -116,10 +116,8 @@ function count_fragments() {
 function getDate() {
 	let elem=document.getElementById("title").getElementsByTagName('time')[0];
 	if (elem.innerHTML!='') return;
-	const months=["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"];
-	const days=["Dimanche","Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi"];
-	let d=new Date();
-	elem.innerHTML=days[d.getDay()]+" "+d.getDate()+" "+months[d.getMonth()]+" "+d.getFullYear();
+	let d=new Date().toLocaleDateString(document.documentElement.lang,{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+	elem.innerHTML=d[0].toUpperCase()+d.slice(1);
 }
 
 /**********************************
@@ -195,14 +193,16 @@ function reset_fragments(slide,num) {
 	Array.from(slide.querySelectorAll('[data-fragment]')).forEach(function(element) {
 		let fragspec=JSON.parse(element.dataset["fragment"]);
 		Object.getOwnPropertyNames(fragspec).forEach(function(fraglist) {
-			if (test_frag(fraglist,num)) {
-				fragspec[fraglist].forEach(function(val) {
-					element.classList.add(val);
-				});
-			} else {
-				fragspec[fraglist].forEach(function(val) {
-					element.classList.remove(val);
-				});
+			if (fragspec[fraglist]!=null) {
+				if (test_frag(fraglist,num)) {
+					fragspec[fraglist].forEach(function(val) {
+						element.classList.add(val);
+					});
+				} else {
+					fragspec[fraglist].forEach(function(val) {
+						element.classList.remove(val);
+					});
+				}
 			}
 		});
 	}); 
@@ -923,7 +923,8 @@ function displayQrcode() {
 	syncd.id='qrcode-view';
 	let uri=window.location.protocol+'//'+window.location.hostname+window.location.pathname+'?sync='+syncName;
 	let encodeduri=encodeURIComponent(uri);
-	syncd.innerHTML='<div class="title">Suivez la présentation en direct<br/>en flashant le QR-Code suivant</div><figure><img src="https://chart.googleapis.com/chart?cht=qr&chl='+encodeduri+'&chs=400x400" /></figure><p><a href="'+uri+'">'+uri+'</p>';
+	//syncd.innerHTML='<div class="title">Suivez la présentation en direct<br/>en flashant le QR-Code suivant</div><figure><img src="https://chart.googleapis.com/chart?cht=qr&chl='+encodeduri+'&chs=400x400" /></figure><p><a href="'+uri+'">'+uri+'</p>';
+	syncd.innerHTML='<div class="title">Suivez la présentation en direct<br/>en flashant le QR-Code suivant</div><figure><img src="https://api.qrserver.com/v1/create-qr-code/?size=400x400&data='+encodeduri+'" /></figure><p><a href="'+uri+'">'+uri+'</p>';
 	on_qrcode=true;
 	document.body.insertAdjacentElement('afterbegin',syncd);
 	setTimeout(()=>{syncd.classList.add('active');},10);
@@ -983,6 +984,40 @@ function prepare_slides() {
 		slides.push({'id':element.id,'background':lastb,'animation':lasta,'navigation':!compare(element.dataset['navigation'],'false'),'footer':!compare(element.dataset['footer'],'false')});
 	});
 	count_fragments(); // Count fragments in each slide
+	// Auto-generate fragments
+	Array.from(document.getElementsByClassName('slide')).forEach(function(element) {
+		if ('autofragment' in element.dataset) {
+			let fragspec=JSON.parse(element.dataset["autofragment"]);
+			let fragbefore=['invisible'];
+			let fragafter=null;
+			let fragcurrent=null;
+			let fraganim=null;
+			if (fragspec.length>1) {
+				if (fragspec[1].length>=4) fraganim=fragspec[1][3];
+				if (fragspec[1].length>=3) fragafter=fragspec[1][2];
+				if (fragspec[1].length>=2) fragbefore=fragspec[1][0];
+				if (fragspec[1].length>=1) fragcurrent=fragspec[1][(fragspec[1].length>=2)?1:0];
+			}
+			let elements=element.querySelectorAll(fragspec[0]);
+			getSlideElement(element.id)['numfragments']=elements.length-1;
+			for (let i=0;i<elements.length;++i) {
+				let fragmentp={};
+				if (i>0) {
+					if (i>1) fragmentp['0-'+(i-1).toString()]=fragbefore;
+					else fragmentp['0']=fragbefore;
+				}
+				fragmentp[i.toString()]=fragcurrent;
+				if (i<elements.length-2) fragmentp[(i+1).toString()+'-'+(elements.length-1).toString()]=fragafter;
+				else if (i<elements.length-1) fragmentp[(i+1).toString()]=fragafter;
+				elements[i].dataset['fragment']=JSON.stringify(fragmentp);
+				if (fraganim!=null) {
+					let fragmenta={};
+					fragmenta[i.toString()]=fraganim;
+					elements[i].dataset['fanim']=JSON.stringify(fragmenta);
+				}
+			}
+		}
+	});
 	compose_outline_slide(); // Fill out outline slides
 	slide=document.getElementById('outline');
 	lastb=slide.dataset['background'];

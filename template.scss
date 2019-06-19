@@ -73,11 +73,11 @@ body {
 	.section {
 		margin: 0 1.2vw;
 		font-size: 0.7em;
-		color: $color_afbdarkgreen;
+		color: $palettea;
 	}
 
 	& > div.currentSection .title {
-		background-color: $color_afbdarkgreen;
+		background-color: $palettea;
 		color: white;
 	}
 
@@ -87,7 +87,7 @@ body {
 
 	.section span.currentSubsection {
 		display: inline-block;
-		background-color: $color_afbdarkgreen;
+		background-color: $palettea;
 		margin: 0 0.24vw 0 0;
 
 		a {
@@ -96,7 +96,7 @@ body {
 	}
 	
 	a {
-		color: $color_afbdarkgreen;
+		color: $palettea;
 		text-decoration: none;
 		font-size: 1.2em;
 	}
@@ -112,7 +112,7 @@ body {
 	left: 0;
 	margin: 0 1.2vw;
 	font-size: 0.7em;
-	color: $color_afbdarkgreen;
+	color: $palettea;
 
 	div:first-child {
 		position: absolute;
@@ -193,7 +193,7 @@ body {
 
 	.title {
 		text-align: center;
-		color: $color_afbdarkgreen;
+		color: $palettea;
 		flex: 0 1 0;
 	}
 
@@ -237,19 +237,19 @@ body {
 
 	h1 {
 		@extend %leftpos;
-		color: $color_afbdarkgreen;
+		color: $palettea;
 		font: bold 180% sans-serif;
 		bottom: 26%;
 
 		.subtitle {
-			color: $color_afbdarkblue;
+			color: $paletteb;
 			font: italic 80% sans-serif;
 		}
 	}
 
 	.authordate {
 		@extend %leftpos;
-		color: $color_afbdarkblue;
+		color: $paletteb;
 		font-size: 120%;
 		line-height: 1.5;
 		top: 78%;
@@ -276,7 +276,7 @@ body {
 		padding: 1.5vh 0px 0.8vh 0px;
 		text-align: center;
 		font: bold 180% sans-serif;
-		color: $color_afbdarkgreen;
+		color: $palettea;
 		flex: none;
 		margin: 8vh 5vw 0.6vw 5vw;
 	}
@@ -284,7 +284,7 @@ body {
 	& > .content {
 		border-width: 0.6vh 0;
 		border-style: solid;
-		border-color: $color_afbgreen;
+		border-color: $palettea;
 		padding: 1.2vw 2.4vw;
 		margin: 0 5vw 6vh 5vw;
 		min-height: 0;
@@ -297,7 +297,7 @@ body {
 		figure.centered {
 			display: flex;
 			flex-flow: column nowrap;
-			flex: 1;
+			flex: auto;
 			overflow: hidden;
 			position: relative;
 
@@ -317,7 +317,7 @@ body {
 			flex-wrap: wrap;
 
 			&>p,&>ul,&>div {
-				width: calc(50% - 1.8vw);
+				width: calc(50% - 3.6vw);
 				margin: 1.56vh 1.2vw;
 			}
 		}
@@ -433,7 +433,7 @@ body {
 }
 
 .targetted,#title.targetted {
-	border: 20px solid $color_afbdarkgreen;
+	border: 20px solid $palettea;
 }
 
 
@@ -445,7 +445,7 @@ body {
 
 .invisible {
 	visibility: hidden;
-	animation-play-state: pause;
+	animation-play-state: paused;
 }
 
 // Generic styles
@@ -466,7 +466,7 @@ ul {
 		&::before {
 			content: "• ";
 			font-size: 200%;
-			color: $color_afbdarkgreen;
+			color: $palettea;
 			display: inline-block;
 			vertical-align: -0.1em;
 		}
@@ -494,14 +494,14 @@ ul {
 	padding: 0;
 	border-radius: 0.6vmax;
 	@include shadowed;
-	background-color: $color_afblightgreen;
+	background-color: $palette_bgla;
 	
 	h1 {
 		padding: 0.47vh 0.6vw 0.78vh 0.6vw;
 		margin: 0 0 0.78vh 0;
 		border-radius: 0.6vmax 0.6vmax 0 0;
 		font: bold 120% sans-serif;
-		color: $color_afbdarkgreen;
+		color: $palettea;
 		background-image: linear-gradient(to bottom,$color_afbsemigreen 0%,$color_afbsemigreen 80%,$color_afblightgreen 100%);
 	}
 
@@ -515,7 +515,7 @@ ul {
 }
 
 strong {
-	color: $color_afbdarkgreen;
+	color: $palettea;
 	font-weight: bold;
 }
 
@@ -527,7 +527,7 @@ blockquote {
 	
 	&::before {
 		content: "\201C";
-		color: $color_afbdarkblue;
+		color: $paletteb;
 		font-size: 4em;
 		position: absolute;
 		left: 0px;
@@ -555,14 +555,14 @@ table {
 	border-collapse: collapse;
 
 	thead,tfoot {
-		background-color: $color_afbdarkgreen;
+		background-color: $palettea;
 		color: white;
 		font-weight: bold;
 	}
 
 	tbody.dummy-header {
 		font-weight: bold;
-		color: $color_afbdarkgreen;
+		color: $palettea;
 	}
 
 	thead,tr,tfoot,tbody.dummy-header {
@@ -587,7 +587,7 @@ table {
 
 	&.headcolumn {
 		td:first-child {
-			background: $color_afbdarkgreen;
+			background: $palettea;
 			font-weight: bold;
 			color: white;
 		}
@@ -599,7 +599,7 @@ table {
 
 	&.grid {
 		td {
-			border: 1px solid $color_afbdarkgreen;
+			border: 1px solid $palettea;
 		}
 		thead td {
 			border: 1px solid white;
@@ -627,25 +627,36 @@ table {
 	body {
 		height: auto;
 		margin: 0;
-		font: 2.8vh sans-serif;
+		font: 2.4vh sans-serif;
 	}
 	
 	#thumblayer {
 		height: auto;
 		position: relative;
-		top: -4vh;
+		top: 0vh;
 	}
 	
 	.wthumb {
 		page-break-inside: avoid;
-		width: 48vw;
-		height: 48vh;
+		width: 98vw;
+		height: 95vh;
+		margin-bottom: 4vh;
+
+		&:hover {
+			left: 0;
+			top: 0;
+			z-index: 21;
+
+			.thumbnail {
+				transform: scale(0.98, 0.95);
+			}
+		}
 	}
 	
 	.thumbnail,#title.thumbnail,#outline.thumbnail {
 		position: relative;
 		transform-origin: left top;
-		transform: scale(0.48, 0.48);
+		transform: scale(0.98, 0.95);
 	}
 
 	#minitoc,#footer {
@@ -658,5 +669,10 @@ table {
 	
 	* {
 		animation:none !important;
+	}
+
+	.block {
+		border: 1px solid black;	
+		background-color: white;
 	}
 }

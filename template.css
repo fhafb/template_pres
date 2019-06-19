@@ -259,7 +259,7 @@ body {
   .slide > .content, #outline > .content {
     border-width: 0.6vh 0;
     border-style: solid;
-    border-color: #9FC418;
+    border-color: #A1C51B;
     padding: 1.2vw 2.4vw;
     margin: 0 5vw 6vh 5vw;
     min-height: 0;
@@ -271,7 +271,7 @@ body {
     .slide > .content figure.centered, #outline > .content figure.centered {
       display: flex;
       flex-flow: column nowrap;
-      flex: 1;
+      flex: auto;
       overflow: hidden;
       position: relative; }
       .slide > .content figure.centered svg, .slide > .content figure.centered img, #outline > .content figure.centered svg, #outline > .content figure.centered img {
@@ -286,7 +286,7 @@ body {
     .slide > .content.autocolumns, #outline > .content.autocolumns {
       flex-wrap: wrap; }
       .slide > .content.autocolumns > p, .slide > .content.autocolumns > ul, .slide > .content.autocolumns > div, #outline > .content.autocolumns > p, #outline > .content.autocolumns > ul, #outline > .content.autocolumns > div {
-        width: calc(50% - 1.8vw);
+        width: calc(50% - 3.6vw);
         margin: 1.56vh 1.2vw; }
     .slide > .content.twocolumns, .slide > .content .twocolumns, #outline > .content.twocolumns, #outline > .content .twocolumns {
       display: flex;
@@ -379,7 +379,7 @@ body {
 
 .invisible {
   visibility: hidden;
-  animation-play-state: pause; }
+  animation-play-state: paused; }
 
 p, table, img, object {
   margin: 2.8vh 0; }
@@ -499,22 +499,32 @@ table {
   body {
     height: auto;
     margin: 0;
-    font: 2.8vh sans-serif; }
+    font: 2.4vh sans-serif; }
   #thumblayer {
     height: auto;
     position: relative;
-    top: -4vh; }
+    top: 0vh; }
   .wthumb {
     page-break-inside: avoid;
-    width: 48vw;
-    height: 48vh; }
+    width: 98vw;
+    height: 95vh;
+    margin-bottom: 4vh; }
+    .wthumb:hover {
+      left: 0;
+      top: 0;
+      z-index: 21; }
+      .wthumb:hover .thumbnail {
+        transform: scale(0.98, 0.95); }
   .thumbnail, #title.thumbnail, #outline.thumbnail {
     position: relative;
     transform-origin: left top;
-    transform: scale(0.48, 0.48); }
+    transform: scale(0.98, 0.95); }
   #minitoc, #footer {
     visibility: hidden; }
   #background {
     background-image: none !important; }
   * {
-    animation: none !important; } }
+    animation: none !important; }
+  .block {
+    border: 1px solid black;
+    background-color: white; } }
